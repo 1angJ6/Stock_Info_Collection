@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 body {
-    background-image: url("http://cs-server.usc.edu:45678/hw/hw8/images/background.png");
+    background-image: url("https://images.unsplash.com/3/doctype-hi-res.jpg");
 }
