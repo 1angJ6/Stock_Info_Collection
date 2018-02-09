@@ -1,0 +1,257 @@
+<div class="panel panel-default" [@slidingAnimation]>
+  <div class="panel-heading">
+    <div class="row">
+        <div class="col-xs-4 col-md-4">
+          <div>
+            <button class="btn btn-default refresh" type="button" (click)="gotoFavouriteList()">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+        <div class="col-xs-4 col-md-4" style="height:100%;">
+          <div class="panel-title heading" style="text-align:center;">Stock Details</div>
+        </div>
+        <div class="col-xs-4 col-md-4"></div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <ul class="nav nav-pills">
+        <li role="presentation" [class.active]="mainNavState==='currentStock'"><a href="javascript:void(0)" (click)="mainNavClick('currentStock')">
+          <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+          <span class="hidden-xs">Current Stock</span>
+          <span class="hidden-md hidden-lg">Stock</span>
+        </a></li>
+        <li role="presentation" [class.active]="mainNavState==='historicalCharts'"><a href="javascript:void(0)" (click)="mainNavClick('historicalCharts')">
+          <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+          <span class="hidden-xs">Historical Charts</span>
+          <span class="hidden-md hidden-lg">Charts</span>
+        </a></li>
+        <li role="presentation" [class.active]="mainNavState==='newsFeeds'"><a href="javascript:void(0)" (click)="mainNavClick('newsFeeds')">
+          <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+          <span class="hidden-xs">News Feeds</span>
+          <span class="hidden-md hidden-lg">News</span>
+        </a></li>
+    </ul>
+
+    <hr>
+
+    <div id="currentStock" class="mainNav">
+      <div class="row">
+        <div class="col-xs-12 col-md-6">
+          <div class="heading">
+            <div class="title">
+              Stock Details
+            </div>
+            <div class="buttons">
+                <button *ngIf="!isFavoStockExist();" (click)="setFavoStock()" [disabled]="!stockDetails || hasError(stockDetails)" class="btn btn-default" type="button" style="padding: 0;">
+                    <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>
+                </button>
+                <button *ngIf="isFavoStockExist();" [disabled]="!stockDetails" (click)="removeFavoStock()" class="btn btn-default" type="button" style="padding: 0;">
+                  <span class="glyphicon glyphicon-star" style="color: #fed531" aria-hidden="true"></span>
+                </button>
+                <button [disabled]="!currentChartloaded() || indicatorDataHasError()" class="btn btn-default" type="button" style="padding: 0;" (click)="shareImg()">
+                    <img src="http://cs-server.usc.edu:45678/hw/hw8/images/facebook.png" width="20px">
+                </button>
+            </div>
+          </div>
+
+          <div class="progress details" *ngIf="!(stockDetails)">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+              <span class="sr-only">45% Complete</span>
+            </div>
+          </div>
+          <div class="details" *ngIf="stockDetails && !hasError(stockDetails)">
+            <table class="table table-striped">
+              <tr>
+                <th>Stock Ticker Symbol</th><td>{{stockDetails.stockTickerSymbol}}</td>
+              </tr>
+              <tr>
+                <th>Last Price</th><td>{{stockDetails.lastPrice}}</td>
+              </tr>
+              <tr>
+                <th>Change (Change Percent)</th>
+                <td *ngIf="priceIncrease(stockDetails.change); else decrease" style="color:green">
+                    {{stockDetails.change}} ({{stockDetails.changePercent}})
+                    <img src="http://cs-server.usc.edu:45678/hw/hw8/images/Up.png" height="18px">
+                </td>
+                <ng-template #decrease>
+                    <td style="color: red">
+                        {{stockDetails.change}} ({{stockDetails.changePercent}})
+                        <img src="http://cs-server.usc.edu:45678/hw/hw8/images/Down.png" height="18px">
+                    </td>
+                </ng-template>
+              </tr>
+              <tr>
+                <th>Timestamp</th><td>{{stockDetails.timeStamp}}</td>
+              </tr>
+              <tr>
+                <th>Open</th><td>{{stockDetails.open}}</td>
+              </tr>
+              <tr>
+                <th>Close</th><td>{{stockDetails.close}}</td>
+              </tr>
+              <tr>
+                <th>Day's Range</th>
+                <td>{{stockDetails.low}} - {{stockDetails.high}}</td>
+              </tr>
+              <tr>
+                <th>Volume</th><td>{{stockDetails.volume}}</td>
+              </tr>
+            </table>
+          </div>
+          <div *ngIf="stockDetails && hasError(stockDetails)" class="alert alert-danger details" role="alert">Error: Failed to get current stock data.</div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+          <ul class="nav nav-tabs">
+            <li role="presentation" [class.active]="subNavState==='price'"><a href="javascript:void(0)" (click)="subNavClick('price')">Price</a></li>
+            <li role="presentation" [class.active]="subNavState==='sma'"><a href="javascript:void(0)" (click)="subNavClick('sma')">SMA</a></li>
+            <li role="presentation" [class.active]="subNavState==='ema'"><a href="javascript:void(0)" (click)="subNavClick('ema')">EMA</a></li>
+            <li role="presentation" [class.active]="subNavState==='stoch'"><a href="javascript:void(0)" (click)="subNavClick('stoch')">STOCH</a></li>
+            <li role="presentation" [class.active]="subNavState==='rsi'"><a href="javascript:void(0)" (click)="subNavClick('rsi')">RSI</a></li>
+            <li role="presentation" [class.active]="subNavState==='adx'"><a href="javascript:void(0)" (click)="subNavClick('adx')">ADX</a></li>
+            <li role="presentation" [class.active]="subNavState==='cci'"><a href="javascript:void(0)" (click)="subNavClick('cci')">CCI</a></li>
+            <li role="presentation" [class.active]="subNavState==='bbands'"><a href="javascript:void(0)" (click)="subNavClick('bbands')">BBANDS</a></li>
+            <li role="presentation" [class.active]="subNavState==='macd'"><a href="javascript:void(0)" (click)="subNavClick('macd')">MACD</a></li>
+          </ul>
+          
+          <div id="price" class="subNav">
+            <div class="progress details" *ngIf="!(price)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="price && !hasError(price)">
+              <chart id="priceChart" [options]="priceChart"></chart>
+            </div>
+            <div *ngIf="price && hasError(price)" class="alert alert-danger details" role="alert">Error: Failed to get Price data.</div>
+          </div>
+
+          <div id="sma" class="subNav" style="display:none;">
+              <div class="progress details" *ngIf="!(sma)">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                  <span class="sr-only">45% Complete</span>
+                </div>
+              </div>
+              <div *ngIf="sma && !hasError(sma)">
+                <chart [options]="smaChart"></chart>
+              </div>
+              <div *ngIf="sma && hasError(sma)" class="alert alert-danger details" role="alert">Error: Failed to get SMA data.</div>
+          </div>
+
+          <div id="ema" class="subNav" style="display:none;">
+              <div class="progress details" *ngIf="!(ema)">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                  <span class="sr-only">45% Complete</span>
+                </div>
+              </div>
+              <div *ngIf="ema && !hasError(ema)">
+                  <chart [options]="emaChart"></chart>
+              </div>
+              <div *ngIf="ema && hasError(ema)" class="alert alert-danger details" role="alert">Error: Failed to get EMA data.</div>
+          </div>
+
+          <div id="stoch" class="subNav" style="display:none;">
+            <div class="progress details" *ngIf="!(stoch)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="stoch && !hasError(stoch)">
+                <chart [options]="stochChart"></chart>
+            </div>
+            <div *ngIf="stoch && hasError(stoch)" class="alert alert-danger details" role="alert">Error: Failed to get STOCH data.</div>
+          </div>
+
+          <div id="rsi" class="subNav" style="display:none;">
+            <div class="progress details" *ngIf="!(rsi)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="rsi && !hasError(rsi)">
+                <chart [options]="rsiChart"></chart>
+            </div>
+            <div *ngIf="rsi && hasError(rsi)" class="alert alert-danger details" role="alert">Error: Failed to get RSI data.</div>
+          </div>
+
+          <div id="adx" class="subNav" style="display:none;">
+            <div class="progress details" *ngIf="!(adx)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="adx && !hasError(adx)">
+                <chart [options]="adxChart"></chart>
+            </div>
+            <div *ngIf="adx && hasError(adx)" class="alert alert-danger details" role="alert">Error: Failed to get ADX data.</div>
+          </div>
+
+          <div id="cci" class="subNav" style="display:none;">
+            <div class="progress details" *ngIf="!(cci)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="cci && !hasError(cci)">
+                <chart [options]="cciChart"></chart>
+            </div>
+            <div *ngIf="cci && hasError(cci)" class="alert alert-danger details" role="alert">Error: Failed to get CCI data.</div>
+          </div>
+
+          <div id="bbands" class="subNav" style="display:none;">
+            <div class="progress details" *ngIf="!(bbands)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="bbands && !hasError(bbands)">
+                <chart [options]="bbandsChart"></chart>
+            </div>
+            <div *ngIf="bbands && hasError(bbands)" class="alert alert-danger details" role="alert">Error: Failed to get BBANDS data.</div>
+          </div>
+
+          <div id="macd" class="subNav" style="display:none;">
+            <div class="progress details" *ngIf="!(macd)">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+              </div>
+            </div>
+            <div *ngIf="macd && !hasError(macd)">
+                <chart [options]="macdChart"></chart>
+            </div>
+            <div *ngIf="macd && hasError(macd)" class="alert alert-danger details" role="alert">Error: Failed to get MACD data.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="historicalCharts" class="mainNav" style="display:none;">
+      <div class="progress details" *ngIf="!(history)">
+        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+          <span class="sr-only">45% Complete</span>
+        </div>
+      </div>
+      <div *ngIf="history && !hasError(history)">
+          <chart type="StockChart" [options]="historyChart"></chart>
+      </div>
+      <div *ngIf="history && hasError(history)" class="alert alert-danger details" role="alert">Error: Failed to get historical charts data.</div>
+    </div>
+
+    <div id="newsFeeds" class="mainNav" style="display:none;">
+      <div class="progress details" *ngIf="!(news)">
+        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+          <span class="sr-only">45% Complete</span>
+        </div>
+      </div>
+      <div *ngIf="news && !hasError(news)">
+          <div class="well" *ngFor="let new of news">
+            <h4><a href="{{new.link}}" target='_blank'>{{new.title}}</a></h4>
+            <br>
+            <p><b>Author: {{new.author}}</b></p>
+            <p><b>Date: {{new.pubDate}}</b></p>
+          </div>
+      </div>
+      <div *ngIf="news && hasError(news)" class="alert alert-danger details" role="alert">Error: Failed to get news feed data.</div>
+    </div>
+  </div>
+</div>

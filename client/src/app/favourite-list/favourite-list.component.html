@@ -1,0 +1,103 @@
+<div class="panel panel-default" [@slidingAnimation]>
+	<div class="panel-heading">
+		<div class="row">
+			<div class="col-xs-5 col-md-4">
+				<div class="panel-title heading">Favourite List</div>
+			</div>
+			<div class="col-xs-0 col-md-4"></div>
+			<div class="col-xs-7 col-md-4">
+				<div class="buttons">
+					<span class="hidden-xs">Automatic Refresh:</span>
+					<input type="checkbox" data-toggle="toggle" id="toggle">
+					<button class="btn btn-default refresh" type="button" (click)="refreshFavo()">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+					</button>
+					<button [disabled]="exist == false" class="btn btn-default refresh" type="button" (click)="gotoStockDetails()">
+						<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-12 col-md-4">
+					<div class="filter">
+							<span class="filter_title">Sort by</span>
+							<span>
+								<select id="sortBy" class="form-control input-sm" (change)="sortList()">
+									<option selected="selected" value="default">Default</option>
+									<option value="symbol">Symbol</option>
+									<option value="price">Price</option>
+									<option value="change">Change</option>
+									<option value="changePercent">Change Percent</option>
+									<option value="volume">Volume</option>
+								</select>
+							</span>
+						</div>
+			</div>
+			<div class="col-xs-12 col-md-4">
+					<div class="filter">
+							<span class="filter_title">Order</span>
+							<span>
+								<select [disabled]="disableSelect()" id="order" class="form-control input-sm" (change)="sortList()">
+									<option selected="selected" value="a">Ascending</option>
+									<option value="d">Descending</option>
+								</select>
+							</span>
+						</div>
+			</div>
+			<div class="col-xs-0 col-md-2"></div>
+			<div class="col-xs-0 col-md-2"></div>
+		</div>
+		<!-- <div class="filter">
+			<span class="filter_title">Sort by</span>
+			<span>
+				<select id="sortBy" class="form-control input-sm" (change)="sortList()">
+					<option selected="selected" value="default">Default</option>
+					<option value="symbol">Symbol</option>
+					<option value="price">Price</option>
+					<option value="change">Change</option>
+					<option value="changePercent">Change Percent</option>
+					<option value="volume">Volume</option>
+				</select>
+			</span>
+		</div>
+		<div class="filter">
+			<span class="filter_title">Order</span>
+			<span>
+				<select [disabled]="disableSelect()" id="order" class="form-control input-sm" (change)="sortList()">
+					<option selected="selected" value="a">Ascending</option>
+					<option value="d">Descending</option>
+				</select>
+			</span>
+		</div> -->
+		<div style="overflow: auto;">
+			<table class="table table-striped">
+				<tr>
+					<th>Symbol</th><th>Stock Price</th><th>Change(Change Percent)</th><th>Volume</th><th></th>
+				</tr>
+				<tr *ngFor="let stock of favoStocks">
+					<td><a [routerLink]="['/stockDetails',stock.stockTickerSymbol,'1']">{{stock.stockTickerSymbol}}</a></td>
+					<td>{{stock.close}}</td>
+					<td *ngIf="priceIncrease(stock.change); else decrease" style="color:green">
+						{{stock.change}} ({{stock.changePercent}})
+						<img src="http://cs-server.usc.edu:45678/hw/hw8/images/Up.png" height="18px">
+					</td>
+					<ng-template #decrease>
+						<td style="color: red;">
+							{{stock.change}} ({{stock.changePercent}})
+							<img src="http://cs-server.usc.edu:45678/hw/hw8/images/Down.png" height="18px">
+						</td>
+					</ng-template>
+					<td>{{stock.volume}}</td>
+					<td>
+						<button class="btn btn-default refresh" type="button" (click)="removeStock(stock.stockTickerSymbol)">
+							<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+						</button>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>

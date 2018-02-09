@@ -1,0 +1,28 @@
+.heading {
+    font-weight: bold;
+    text-align: right;
+    /* margin-bottom: 50px; */
+}
+
+.title {
+    float: left;
+}
+
+.buttons {
+    /* float: right; */
+}
+
+.buttons button {
+    width: 34px;
+    height: 34px;
+}
+
+.details {
+    margin-top: 50px;
+}
+
+.facebook {
+    padding: 0px;
+}
+
+chart { display: block; }

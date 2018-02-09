@@ -1,0 +1,16 @@
+.heading {
+    font-weight: bold;
+}
+
+.title {
+    float: left;
+}
+
+.buttons {
+    float: right;
+}
+
+.buttons button {
+    width: 34px;
+    height: 34px;
+}
